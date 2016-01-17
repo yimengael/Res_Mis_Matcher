@@ -1,1 +1,45 @@
+// Query Linkedin for the connections 
+jobs=read(http("https://api.linkedin.com/v1/people/~/connections:(id,first-name,last-name,headline,summary,languages:(language:(name),proficiency:(level)),skills:(skill:(name)),certifications:(name),educations:(school-name,field-of-study,degree,activities,notes),location:(name),specialties,positions,public-profile-url)?format=json&oauth2_access_token=AQV0RbNg6_PUW8VMwiER0jtrVBeM8_oCJKe74YadyFbd0lW5xEcwA4G5_lkKN-x9o7kSp8-2Z0-iSq6dTdcd6DoYVFzMR3e_IL-LVg-J-ZAd0pNrEGkLXz6Z7qxbF4yTrnGDpbwqlqZuv0Ruk3Cj-M-ZH41VBkzHZ7PUpbztJVVZcqIobxA"));                   
+// Get the current system time 
+time=now(); 
+type="externe";       
+reg = regex("[\\\n,\\n,\\[,\\],\\\"]");                
+// Extract selected fields from JSON data returned  
+jobRecords = jobs[0].values -> 
+                transform {							
+							id: $.id,
+							Type:type,
+							idCv:"",
+							fullName:"",
+							lastName: $.lastName,
+							firstName : $.firstName,
+							cv:strReplace(strcat($.positions.values.company.name,$.positions.values.summary,$.positions.values.title ,$.educations.values.degree,$.educations.values.fieldOfStudy,$.educations.values.schoolName,$.skills.values.skill.name,$.certifications.values.name,$.languages.values.language.name,$.languages.values.proficiency.level),reg,""),
+							dateStore:"",
+							url:$.publicProfileUrl,
+							grade:"",
+							role:$.headline,
+							skill:strReplace(strcat($.skills.values[0].skill[0].name),reg,""),
+							location:$.location.name,
+							dateDispo:"",
+							sexe:"",
+							situation:"",
+							coefficient:"",
+							tempsContractuel:"",
+							etablissement:"",
+							division:"",
+							tel:"",
+							email:"",
+							dateDenaissance:$."date-of-birth",
+							typeDiplome:"",
+							niveauDiplome:strReplace(to_string($.educations.values.degree),reg,""),
+							subBUResourc:"",  
+ };
+       
+
+jobRecords -> write(del("/biginsights/hive/warehouse/profil/part-r-00000-profil-ext-" + 
+serialize(dateMillis(time)),delimiter="|",quoted=false,
+schema=schema {id,Type,idCv,fullName,lastName,firstName,cv,dateStore,url,grade,role,skill,location,dateDispo,sexe,situation,coefficient,
+tempsContractuel,etablissement,division,tel,email,dateDeNaissance,typeDiplome,niveauDiplome,subBUResourc}));
+
+quit;
 
