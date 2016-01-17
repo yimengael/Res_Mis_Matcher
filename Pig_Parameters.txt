@@ -1,0 +1,11 @@
+# ---------------------------
+# -- Autor : Gael Yimen Y. --
+# ---------------------------
+
+# My PIG parameters
+PIPE_SEPARATOR = |
+SEMI_COLON_SEPARATOR = ;
+INPUT_FILE_METADATA = /pocbigdataIBM/landingzone/source/METADATA
+OUTPUT_FILE_METADATA = /pocbigdataIBM/landingzone/cible/METADATA
+OUTPUT_FILE_CV = /pocbigdataIBM/landingzone/cible/CV
+OUTPUT_FILE_PROFIL = /pocbigdataIBM/landingzone/cible/PROFIL
